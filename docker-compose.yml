@@ -1,0 +1,76 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: spineless-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: spineless
+      POSTGRES_USER: spineless
+      POSTGRES_PASSWORD: spineless
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U spineless -d spineless']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - spineless_postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: spineless-redis
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes']
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - spineless_redis_data:/data
+
+  app:
+    image: ghcr.io/k0walski8/spineless:latest
+    container_name: spineless-app
+    pull_policy: always
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production
+      PORT: '3000'
+      HOSTNAME: '0.0.0.0'
+
+      DATABASE_URL: 'postgresql://spineless:spineless@postgres:5432/spineless'
+      REDIS_URL: 'redis://redis:6379'
+      UPSTASH_REDIS_REST_URL: 'http://redis:6379'
+      UPSTASH_REDIS_REST_TOKEN: 'local-dev-token'
+
+      EXA_API_KEY: 'replace-with-real-exa-key'
+      BETTER_AUTH_SECRET: 'replace-with-strong-random-secret'
+      CRON_SECRET: 'replace-with-strong-random-secret'
+      BLOB_READ_WRITE_TOKEN: 'local-blob-token'
+      QSTASH_TOKEN: 'local-qstash-token'
+
+      OPENROUTER_API_KEY: 'replace-with-openrouter-key'
+      OPENROUTER_MODEL: 'qwen/qwen3-32b'
+      OPENROUTER_EMBEDDING_MODEL: 'qwen/qwen3-embedding-8b'
+      OLLAMA_BASE_URL: 'http://host.docker.internal:11434/v1'
+      OLLAMA_MODEL: 'qwen3:8b'
+
+      SEARXNG_URL: 'http://192.168.50.158:30053'
+      PLAYWRIGHT_SERVICE_URL: 'http://host.docker.internal:3001/extract'
+
+      ALLOWED_ORIGINS: 'http://localhost:3000'
+      NEXT_PUBLIC_POSTHOG_KEY: ''
+      NEXT_PUBLIC_POSTHOG_HOST: ''
+
+volumes:
+  spineless_postgres_data:
+  spineless_redis_data:
