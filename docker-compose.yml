@@ -31,7 +31,7 @@ services:
       - spinora_redis_data:/data
 
   app:
-    image: ghcr.io/k0walski8/spinora:latest
+    image: ${SPINORA_IMAGE:-ghcr.io/k0walski8/spinora:latest}
     container_name: spinora-app
     pull_policy: always
     restart: unless-stopped

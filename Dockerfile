@@ -11,6 +11,15 @@ RUN npm install
 FROM base AS builder
 WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV DATABASE_URL=postgresql://spinora:spinora@localhost:5432/spinora
+ENV BETTER_AUTH_SECRET=build-secret
+ENV REDIS_URL=redis://localhost:6379
+ENV UPSTASH_REDIS_REST_URL=http://localhost:6379
+ENV UPSTASH_REDIS_REST_TOKEN=build-token
+ENV EXA_API_KEY=build-key
+ENV CRON_SECRET=build-secret
+ENV BLOB_READ_WRITE_TOKEN=build-token
+ENV QSTASH_TOKEN=build-token
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN npm run build
