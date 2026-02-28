@@ -216,7 +216,7 @@ This repository ships a self-contained `docker-compose.yml`:
 ##### GHCR Image
 
 The app image is published to:
-- `ghcr.io/k0walski8/spineless:latest`
+- `ghcr.io/k0walski8/spinora:latest`
 
 A GitHub Actions workflow (`.github/workflows/ghcr.yml`) builds and pushes this image on `main` and version tags.
 

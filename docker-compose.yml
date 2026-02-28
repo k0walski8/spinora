@@ -3,23 +3,23 @@ version: '3.9'
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: spineless-postgres
+    container_name: spinora-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: spineless
-      POSTGRES_USER: spineless
-      POSTGRES_PASSWORD: spineless
+      POSTGRES_DB: spinora
+      POSTGRES_USER: spinora
+      POSTGRES_PASSWORD: spinora
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U spineless -d spineless']
+      test: ['CMD-SHELL', 'pg_isready -U spinora -d spinora']
       interval: 10s
       timeout: 5s
       retries: 10
     volumes:
-      - spineless_postgres_data:/var/lib/postgresql/data
+      - spinora_postgres_data:/var/lib/postgresql/data
 
   redis:
     image: redis:7-alpine
-    container_name: spineless-redis
+    container_name: spinora-redis
     restart: unless-stopped
     command: ['redis-server', '--appendonly', 'yes']
     healthcheck:
@@ -28,11 +28,11 @@ services:
       timeout: 5s
       retries: 10
     volumes:
-      - spineless_redis_data:/data
+      - spinora_redis_data:/data
 
   app:
-    image: ghcr.io/k0walski8/spineless:latest
-    container_name: spineless-app
+    image: ghcr.io/k0walski8/spinora:latest
+    container_name: spinora-app
     pull_policy: always
     restart: unless-stopped
     depends_on:
@@ -47,7 +47,7 @@ services:
       PORT: '3000'
       HOSTNAME: '0.0.0.0'
 
-      DATABASE_URL: 'postgresql://spineless:spineless@postgres:5432/spineless'
+      DATABASE_URL: 'postgresql://spinora:spinora@postgres:5432/spinora'
       REDIS_URL: 'redis://redis:6379'
       UPSTASH_REDIS_REST_URL: 'http://redis:6379'
       UPSTASH_REDIS_REST_TOKEN: 'local-dev-token'
@@ -72,5 +72,5 @@ services:
       NEXT_PUBLIC_POSTHOG_HOST: ''
 
 volumes:
-  spineless_postgres_data:
-  spineless_redis_data:
+  spinora_postgres_data:
+  spinora_redis_data:
